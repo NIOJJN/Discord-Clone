@@ -41,32 +41,12 @@
 | **Font Awesome** | Иконки |
 | **SQLite** | База данных |
 
-## 📥 Установка
 
 ### Предварительные требования
 
 - Python 3.9 или выше
 - Redis Server
 - Git
-
-### 1. Клонирование репозитория
-
-git clone https://github.com/NIOJJN/discord-clone.git
-cd discord-clone
-
-2. Создание виртуального окружения
-Windows:
+- Используйте только через venv
 
 
-python -m venv venv
-venv\Scripts\activate
-Linux/macOS:
-
-python3 -m venv venv
-source venv/bin/activate
-3. Установка зависимостей
-
-pip install -r requirements.txt
-4. Запуск Redis
-git clone https://github.com/NIOJJN/discord-clone.git
-cd discord-clone
