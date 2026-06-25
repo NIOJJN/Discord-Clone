@@ -1,52 +1,104 @@
-# Discord Clone
+# 🎮 Discord Clone
 
-![Python](https://img.shields.io/badge/Python-3.11-blue.svg)
-![Django](https://img.shields.io/badge/Django-4.2-green.svg)
-![Channels](https://img.shields.io/badge/Channels-4.0-red.svg)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+> Полнофункциональный клон Discord с чатом в реальном времени, серверами, каналами, личными сообщениями и системой друзей.
 
-Полнофункциональный клон Discord с чатом в реальном времени, серверами, каналами, личными сообщениями и системой друзей.
+[![Python Version](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/)
+[![Django Version](https://img.shields.io/badge/django-4.2-green.svg)](https://www.djangoproject.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![GitHub issues](https://img.shields.io/github/issues/NIOJJN/Discord-Clone)](https://github.com/NIOJJN/Discord-Clone/issues)
+[![GitHub stars](https://img.shields.io/github/stars/NIOJJN/Discord-Clone)](https://github.com/NIOJJN/Discord-Clone/stargazers)
+
+---
 
 ## 📸 Скриншоты
 
-*Скриншоты будут добавлены позже*
+> *Скриншоты будут добавлены позже*
+
+---
 
 ## ✨ Возможности
 
-- 🔐 **Авторизация и регистрация** пользователей
-- 💬 **Чат в реальном времени** через WebSocket
-- 🏠 **Серверы** с категориями и каналами (текстовые/голосовые)
-- 👥 **Система друзей** (запросы, принятие, отклонение)
-- 📝 **Личные сообщения** между пользователями
-- 👑 **Роли на сервере** (владелец, админ, модератор, участник)
-- 🔗 **Приглашения на сервер** по коду
-- 📌 **Закрепление сообщений**
-- 🔍 **Поиск сообщений** в канале
-- ✏️ **Редактирование и удаление** сообщений
-- 🔔 **Уведомления** при упоминаниях
-- 👤 **Профили пользователей** с аватарами и статусами
-- 🎨 **Тёмная тема** в стиле Discord
-- 📱 **Адаптивный дизайн**
+### 🔐 Пользователи и безопасность
+- Регистрация и авторизация пользователей
+- Профили с аватарами и статусами
+- Система друзей (запросы, принятие, отклонение)
+- Безопасное хранение паролей
+
+### 💬 Общение в реальном времени
+- Чат в реальном времени через **WebSocket**
+- Личные сообщения между пользователями
+- Система уведомлений при упоминаниях
+- Закрепление и поиск сообщений
+- Редактирование и удаление сообщений
+
+### 🏠 Серверы и каналы
+- Создание серверов с категориями
+- Текстовые и голосовые каналы
+- Роли на сервере (владелец, админ, модератор, участник)
+- Приглашения на сервер по уникальному коду
+
+### 🎨 Интерфейс
+- Тёмная тема в стиле Discord
+- Адаптивный дизайн для всех устройств
+- Интуитивно понятный интерфейс
+
+---
 
 ## 🛠 Технологии
 
 | Технология | Назначение |
-|------------|------------|
-| **Django 4.2** | Backend фреймворк |
+|:-----------|:-----------|
+| **Django 4.2** | Backend-фреймворк |
 | **Django Channels** | WebSocket для real-time чата |
-| **Daphne** | ASGI сервер |
+| **Daphne** | ASGI-сервер |
 | **Redis** | Бэкенд для Channels |
 | **WhiteNoise** | Раздача статических файлов |
-| **Bootstrap 5** | CSS фреймворк |
+| **Bootstrap 5** | CSS-фреймворк |
 | **Font Awesome** | Иконки |
-| **SQLite** | База данных |
+| **SQLite** | База данных (по умолчанию) |
 
+---
 
-### Предварительные требования
+## 🚀 Быстрый старт
+
+### 📋 Требования
 
 - Python 3.9 или выше
 - Redis Server
 - Git
-- Используйте только через venv
 
+### 📦 Установка
 
+```bash
+# 1. Клонируйте репозиторий
+git clone https://github.com/NIOJJN/Discord-Clone.git
+cd Discord-Clone
+
+# 2. Создайте виртуальное окружение
+python -m venv venv
+
+# 3. Активируйте виртуальное окружение
+# Windows:
+venv\Scripts\activate
+# Linux/macOS:
+source venv/bin/activate
+
+# 4. Установите зависимости
+pip install -r requirements.txt
+
+# 5. Настройте переменные окружения
+cp .env.example .env
+# Отредактируйте .env (укажите SECRET_KEY и другие параметры)
+
+# 6. Выполните миграции
+python manage.py migrate
+
+# 7. Создайте суперпользователя (администратора)
+python manage.py createsuperuser
+
+# 8. Запустите Redis (в отдельном терминале)
+redis-server
+
+# 9. Запустите сервер разработки
+python manage.py runserver
