@@ -101,4 +101,4 @@ python manage.py createsuperuser
 redis-server
 
 # 9. Запустите сервер разработки
-python manage.py runserver
+daphne -b 0.0.0.0 -p 8000 discord_clone.asgi:application
