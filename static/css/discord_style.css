@@ -1,0 +1,996 @@
+/* static/css/discord_style.css */
+
+/* ============================================
+   CSS Переменные
+   ============================================ */
+:root {
+    --bg-primary: #313338;
+    --bg-secondary: #2b2d31;
+    --bg-tertiary: #1e1f22;
+    --bg-hover: #35373c;
+    --bg-active: #404249;
+    --text-primary: #dcddde;
+    --text-secondary: #b5bac1;
+    --text-muted: #949ba4;
+    --brand: #5865f2;
+    --brand-hover: #4752c4;
+    --brand-dark: #3c45a5;
+    --green: #23a559;
+    --green-hover: #1d8c4a;
+    --red: #da373c;
+    --red-hover: #a12d31;
+    --yellow: #f0b232;
+    --border: #3f4147;
+    --radius: 8px;
+    --radius-sm: 4px;
+    --radius-lg: 12px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.3);
+    --transition: all 0.2s ease;
+    --font-primary: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* ============================================
+   Сброс и базовые стили
+   ============================================ */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: var(--font-primary);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    color: #00aff4;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+a:hover {
+    color: #00aff4;
+    text-decoration: underline;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ============================================
+   Страницы авторизации
+   ============================================ */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: var(--bg-primary);
+    background-image: 
+        radial-gradient(circle at 50% 0%, rgba(88, 101, 242, 0.15), transparent 70%),
+        radial-gradient(circle at 80% 100%, rgba(88, 101, 242, 0.1), transparent 70%);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 480px;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--brand), #7289da, #99aab5);
+}
+
+.auth-logo {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-logo i {
+    font-size: 48px;
+    color: var(--brand);
+}
+
+.auth-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.auth-subtitle {
+    font-size: 16px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.form-group .input-wrapper {
+    position: relative;
+}
+
+.form-group .input-wrapper i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 16px;
+    z-index: 1;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 16px;
+    font-family: var(--font-primary);
+    transition: var(--transition);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.15);
+}
+
+.form-group input::placeholder {
+    color: var(--text-muted);
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 16px;
+    font-weight: 600;
+    font-family: var(--font-primary);
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+    width: 100%;
+}
+
+.btn-primary {
+    background-color: var(--brand);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--brand-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.btn-secondary {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background-color: var(--bg-hover);
+}
+
+.btn-danger {
+    background-color: var(--red);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: var(--red-hover);
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 14px;
+    width: auto;
+}
+
+.alert {
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.alert-danger {
+    background-color: rgba(218, 55, 60, 0.15);
+    border: 1px solid rgba(218, 55, 60, 0.3);
+    color: #f8a8aa;
+}
+
+.alert-success {
+    background-color: rgba(35, 165, 89, 0.15);
+    border: 1px solid rgba(35, 165, 89, 0.3);
+    color: #7ed957;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.auth-footer p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.auth-footer a {
+    color: #00aff4;
+    font-weight: 600;
+}
+
+/* ============================================
+   Основной layout (после входа)
+   ============================================ */
+.app-layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Левый сайдбар серверов */
+.servers-bar {
+    width: 72px;
+    min-width: 72px;
+    background-color: var(--bg-tertiary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    gap: 8px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.server-item {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    flex-shrink: 0;
+    color: var(--text-secondary);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.server-item:hover {
+    border-radius: 40%;
+    background-color: var(--brand);
+    color: white;
+}
+
+.server-item.active {
+    border-radius: 40%;
+    background-color: var(--brand);
+    color: white;
+}
+
+.server-item.active::before {
+    content: '';
+    position: absolute;
+    left: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 36px;
+    background-color: white;
+    border-radius: 0 4px 4px 0;
+}
+
+.server-item img {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    object-fit: cover;
+}
+
+.server-item.add {
+    background-color: var(--bg-primary);
+    color: var(--green);
+    border: 2px dashed var(--green);
+}
+
+.server-item.add:hover {
+    background-color: var(--green);
+    color: white;
+    border-radius: 40%;
+    border-color: var(--green);
+}
+
+.server-divider {
+    width: 32px;
+    height: 2px;
+    background-color: var(--border);
+    border-radius: 1px;
+}
+
+/* Сайдбар каналов */
+.channels-bar {
+    width: 240px;
+    min-width: 240px;
+    background-color: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+}
+
+.channels-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: var(--transition);
+    min-height: 48px;
+}
+
+.channels-header:hover {
+    background-color: var(--bg-hover);
+}
+
+.channels-header h5 {
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+}
+
+.channels-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 8px 0;
+}
+
+.channel-category {
+    margin-bottom: 16px;
+}
+
+.category-title {
+    padding: 8px 8px 4px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.category-title:hover {
+    color: var(--text-secondary);
+}
+
+.category-title i {
+    font-size: 10px;
+    transition: transform 0.2s;
+}
+
+.channel-item {
+    padding: 8px 8px;
+    margin: 1px 0;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    transition: var(--transition);
+}
+
+.channel-item:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.channel-item.active {
+    background-color: var(--bg-active);
+    color: var(--text-primary);
+}
+
+.channel-item i {
+    width: 20px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.channel-item span {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Панель пользователя снизу */
+.user-bar {
+    padding: 8px 10px;
+    background-color: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-bar .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.user-bar .user-info {
+    flex: 1;
+    min-width: 0;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: var(--radius-sm);
+}
+
+.user-bar .user-info:hover {
+    background-color: var(--bg-hover);
+}
+
+.user-bar .user-name {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-bar .user-tag {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.user-bar .user-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.user-bar .user-actions button {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-bar .user-actions button:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+/* Основная область */
+.main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-primary);
+    min-width: 0;
+}
+
+.main-header {
+    padding: 12px 16px;
+    min-height: 48px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--bg-primary);
+}
+
+.main-header .header-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.main-header .header-info i {
+    font-size: 24px;
+    color: var(--text-muted);
+}
+
+.main-header .header-info h4 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.main-header .header-info .topic {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: 12px;
+    padding-left: 12px;
+    border-left: 1px solid var(--border);
+}
+
+.main-header .header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.main-header .header-actions button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 18px;
+    transition: var(--transition);
+}
+
+.main-header .header-actions button:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-hover);
+}
+
+/* Область сообщений */
+.messages-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 0;
+}
+
+.message-group {
+    padding: 4px 16px;
+    display: flex;
+    gap: 16px;
+    transition: background-color 0.1s;
+}
+
+.message-group:hover {
+    background-color: var(--bg-hover);
+}
+
+.message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.message-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.message-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.message-author {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text-primary);
+}
+
+.message-author:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.message-time {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.message-text {
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-primary);
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+/* Область ввода */
+.input-area {
+    padding: 0 16px 24px;
+}
+
+.input-area .input-container {
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius);
+    padding: 0 16px;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    border: 1px solid var(--border);
+    transition: var(--transition);
+}
+
+.input-area .input-container:focus-within {
+    border-color: var(--brand);
+}
+
+.input-area textarea {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 12px 0;
+    resize: none;
+    outline: none;
+    max-height: 200px;
+    font-family: var(--font-primary);
+}
+
+.input-area textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.input-area .send-button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    font-size: 20px;
+    transition: var(--transition);
+    margin-bottom: 4px;
+}
+
+.input-area .send-button:hover {
+    color: var(--brand);
+}
+
+/* Сайдбар участников */
+.members-bar {
+    width: 240px;
+    min-width: 240px;
+    background-color: var(--bg-secondary);
+    padding: 0 8px;
+    overflow-y: auto;
+    border-left: 1px solid var(--border);
+}
+
+.members-title {
+    padding: 16px 8px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    background-color: var(--bg-secondary);
+    z-index: 1;
+}
+
+.member-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    margin: 1px 0;
+}
+
+.member-item:hover {
+    background-color: var(--bg-hover);
+}
+
+.member-item img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.member-item .member-name {
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.member-item .member-name.offline {
+    opacity: 0.4;
+}
+
+.role-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.role-owner {
+    background-color: var(--brand);
+    color: white;
+}
+
+.role-admin {
+    background-color: var(--red);
+    color: white;
+}
+
+/* Главная страница */
+.home-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+}
+
+.home-content .welcome-icon {
+    font-size: 80px;
+    color: var(--brand);
+    margin-bottom: 24px;
+    opacity: 0.8;
+}
+
+.home-content h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.home-content p {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+}
+
+/* Поиск */
+.search-results {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.search-result-item:hover {
+    background-color: var(--bg-hover);
+}
+
+.search-result-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.search-result-item .info {
+    flex: 1;
+}
+
+.search-result-item .name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.search-result-item .status {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+/* Модальные окна */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-backdrop.show {
+    display: flex;
+}
+
+.modal-dialog {
+    width: 100%;
+    max-width: 500px;
+    margin: 20px;
+}
+
+.modal-content {
+    background-color: var(--bg-primary);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    animation: modalIn 0.2s ease;
+}
+
+@keyframes modalIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-header {
+    padding: 24px 24px 0;
+}
+
+.modal-header h5 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    padding: 0 24px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Скроллбар */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--bg-tertiary);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #4e5058;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .members-bar {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .channels-bar {
+        width: 200px;
+        min-width: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .servers-bar {
+        display: none;
+    }
+    
+    .channels-bar {
+        width: 100%;
+        min-width: 100%;
+    }
+    
+    .main-area {
+        display: none;
+    }
+    
+    .main-area.mobile-active {
+        display: flex;
+    }
+}
+
+/* Утилиты */
+.text-center { text-align: center; }
+.d-flex { display: flex; }
+.align-center { align-items: center; }
+.justify-center { justify-content: center; }
+.flex-1 { flex: 1; }
+.gap-1 { gap: 4px; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+.mt-1 { margin-top: 4px; }
+.mt-2 { margin-top: 8px; }
+.mt-3 { margin-top: 12px; }
+.mt-4 { margin-top: 16px; }
+.mb-1 { margin-bottom: 4px; }
+.mb-2 { margin-bottom: 8px; }
+.mb-3 { margin-bottom: 12px; }
+.mb-4 { margin-bottom: 16px; }

@@ -1,0 +1,446 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ server.name }} | Discord Clone{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+    <!-- Левый сайдбар серверов -->
+    <div class="servers-bar">
+        <div class="server-item" onclick="location.href='{% url 'direct_messages' %}'" title="Главная">
+            <i class="fab fa-discord"></i>
+        </div>
+        <div class="server-divider"></div>
+        
+        {% for s in request.user.servers.all %}
+        <div class="server-item {% if s.id == server.id %}active{% endif %}" 
+             onclick="location.href='{% url 'server_view' s.id %}'" 
+             title="{{ s.name }}">
+            {% if s.icon %}
+            <img src="{{ s.icon.url }}" alt="{{ s.name }}">
+            {% else %}
+            {{ s.name|slice:":1"|upper }}
+            {% endif %}
+        </div>
+        {% endfor %}
+        
+        <div class="server-item add" data-bs-toggle="modal" data-bs-target="#createServerModal" title="Создать сервер">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
+
+    <!-- Сайдбар каналов -->
+    <div class="channels-bar">
+        <div class="channels-header" data-bs-toggle="dropdown">
+            <h5>{{ server.name }}</h5>
+            <i class="fas fa-chevron-down text-muted small"></i>
+        </div>
+        
+        <!-- Выпадающее меню сервера -->
+        <ul class="dropdown-menu dropdown-menu-dark" style="background-color: var(--bg-primary); border: 1px solid var(--border);">
+            {% if is_owner %}
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#createChannelModal">
+                <i class="fas fa-plus me-2"></i> Создать канал
+            </a></li>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#createCategoryModal">
+                <i class="fas fa-folder-plus me-2"></i> Создать категорию
+            </a></li>
+            <li><hr class="dropdown-divider"></li>
+            {% endif %}
+            <li><a class="dropdown-item" href="#" onclick="copyInvite('{{ server.invite_code }}')">
+                <i class="fas fa-link me-2"></i> Пригласить людей
+            </a></li>
+        </ul>
+
+        <div class="channels-list">
+            {% for category in categories %}
+            <div class="channel-category">
+                <div class="category-title" onclick="toggleCategory(this)">
+                    <i class="fas fa-chevron-down"></i> {{ category.name|upper }}
+                    {% if is_owner %}
+                    <i class="fas fa-plus ms-auto small" data-bs-toggle="modal" data-bs-target="#createChannelModal" 
+                       onclick="event.stopPropagation(); setCategory('{{ category.id }}')"></i>
+                    {% endif %}
+                </div>
+                
+                <div class="category-channels">
+                    {% for channel in category.channels.all %}
+                    <div class="channel-item {% if current_channel and current_channel.id == channel.id %}active{% endif %}"
+                         onclick="location.href='{% url 'channel_view' server.id channel.id %}'">
+                        <i class="fas {% if channel.channel_type == 'text' %}fa-hashtag{% else %}fa-volume-up{% endif %}"></i>
+                        <span>{{ channel.name }}</span>
+                        {% if channel.channel_type == 'voice' %}
+                        <span class="badge bg-secondary small">{{ channel.voice_channel.user_count|default:0 }}</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Каналы без категории -->
+            {% for channel in channels %}
+            {% if not channel.category %}
+            <div class="channel-item {% if current_channel and current_channel.id == channel.id %}active{% endif %}"
+                 onclick="location.href='{% url 'channel_view' server.id channel.id %}'">
+                <i class="fas {% if channel.channel_type == 'text' %}fa-hashtag{% else %}fa-volume-up{% endif %}"></i>
+                <span>{{ channel.name }}</span>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Панель пользователя -->
+        <div class="user-bar">
+            <img src="{{ request.user.avatar.url }}" alt="" class="user-avatar" onclick="location.href='{% url 'profile' request.user.id %}'">
+            <div class="user-info" onclick="location.href='{% url 'profile' request.user.id %}'">
+                <div class="user-name">{{ request.user.username }}</div>
+                <div class="user-tag">Онлайн</div>
+            </div>
+            <div class="user-actions">
+                <button title="Отключить микрофон"><i class="fas fa-microphone-slash"></i></button>
+                <button title="Отключить звук"><i class="fas fa-headphones"></i></button>
+                <button onclick="location.href='{% url 'edit_profile' %}'" title="Настройки"><i class="fas fa-cog"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основная область -->
+    <div class="main-area">
+        {% if current_channel %}
+        <!-- Заголовок канала -->
+        <div class="main-header">
+            <div class="header-info">
+                <i class="fas {% if current_channel.channel_type == 'text' %}fa-hashtag{% else %}fa-volume-up{% endif %}"></i>
+                <div>
+                    <h4>{{ current_channel.name }}</h4>
+                    {% if current_channel.topic %}
+                    <span class="topic">{{ current_channel.topic }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="header-actions">
+                <button title="Закрепленные сообщения"><i class="fas fa-thumbtack"></i></button>
+                <button title="Уведомления"><i class="fas fa-bell"></i></button>
+                <button title="Поиск"><i class="fas fa-search"></i></button>
+                <button title="Участники"><i class="fas fa-users"></i> {{ members|length }}</button>
+            </div>
+        </div>
+
+        <!-- Сообщения -->
+        <div class="messages-area" id="messagesContainer">
+            <!-- Приветственное сообщение -->
+            <div class="message-group">
+                <div class="message-body">
+                    <div class="text-center py-5">
+                        <i class="fas fa-hashtag fa-3x mb-3" style="color: var(--text-muted); opacity: 0.3;"></i>
+                        <h3>Добро пожаловать в #{{ current_channel.name }}!</h3>
+                        <p class="text-muted">Это начало канала #{{ current_channel.name }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {% for message in messages %}
+            <div class="message-group" id="message-{{ message.id }}">
+                <img src="{{ message.author.avatar.url }}" alt="{{ message.author.username }}" class="message-avatar">
+                <div class="message-body">
+                    <div class="message-header">
+                        <span class="message-author" onclick="location.href='{% url 'profile' message.author.id %}'">
+                            {{ message.author.username }}
+                        </span>
+                        {% if message.author == server.owner %}
+                        <span class="role-badge role-owner">Владелец</span>
+                        {% endif %}
+                        <span class="message-time">{{ message.timestamp|date:"d.m.Y H:i" }}</span>
+                    </div>
+                    <div class="message-text">{{ message.content }}</div>
+                    {% if message.edited %}
+                    <span class="text-muted" style="font-size: 11px;">(изменено)</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Поле ввода -->
+        <div class="input-area">
+            <div class="input-container">
+                <textarea id="messageInput" rows="1" placeholder="Напишите сообщение в #{{ current_channel.name }}"></textarea>
+                <button class="send-button" id="sendMessageBtn" title="Отправить">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div class="home-content">
+            <div>
+                <div class="welcome-icon"><i class="fas fa-hashtag"></i></div>
+                <h2>{{ server.name }}</h2>
+                <p>Выберите канал слева для начала общения</p>
+                {% if is_owner %}
+                <button class="btn btn-primary" style="width: auto;" data-bs-toggle="modal" data-bs-target="#createChannelModal">
+                    <i class="fas fa-plus"></i> Создать канал
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Сайдбар участников -->
+    <div class="members-bar">
+        <div class="members-title">УЧАСТНИКИ — {{ members|length }}</div>
+        
+        {% for member in members %}
+        {% if member.role == 'owner' %}
+        <div class="member-item" onclick="location.href='{% url 'profile' member.user.id %}'">
+            <img src="{{ member.user.avatar.url }}" alt="">
+            <span class="member-name">{{ member.nickname|default:member.user.username }}</span>
+            <span class="role-badge role-owner">Владелец</span>
+        </div>
+        {% endif %}
+        {% endfor %}
+        
+        {% for member in members %}
+        {% if member.role == 'admin' %}
+        <div class="member-item" onclick="location.href='{% url 'profile' member.user.id %}'">
+            <img src="{{ member.user.avatar.url }}" alt="">
+            <span class="member-name">{{ member.nickname|default:member.user.username }}</span>
+            <span class="role-badge role-admin">Админ</span>
+        </div>
+        {% endif %}
+        {% endfor %}
+        
+        {% for member in members %}
+        {% if member.role == 'member' %}
+        <div class="member-item" onclick="location.href='{% url 'profile' member.user.id %}'">
+            <img src="{{ member.user.avatar.url }}" alt="">
+            <span class="member-name">{{ member.nickname|default:member.user.username }}</span>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Модальное окно создания канала -->
+<div class="modal fade" id="createChannelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Создать канал</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createChannelForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">ТИП КАНАЛА</label>
+                        <select name="channel_type" class="form-select">
+                            <option value="text">📝 Текстовый канал</option>
+                            <option value="voice">🔊 Голосовой канал</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">НАЗВАНИЕ КАНАЛА</label>
+                        <input type="text" name="name" class="form-control" placeholder="новый-канал" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">КАТЕГОРИЯ</label>
+                        <select name="category" id="categorySelect" class="form-select">
+                            <option value="">Без категории</option>
+                            {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-sm btn-primary">Создать канал</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// ID текущего канала и сервера
+const channelId = {{ current_channel.id|default:'null' }};
+const serverId = {{ server.id }};
+const userId = {{ request.user.id }};
+const username = '{{ request.user.username }}';
+
+// WebSocket соединение
+let chatSocket = null;
+
+if (channelId) {
+    chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + channelId + '/');
+    
+    chatSocket.onopen = function() {
+        console.log('WebSocket подключен');
+    };
+    
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        
+        if (data.type === 'chat_message') {
+            addMessage(data);
+        } else if (data.type === 'message_deleted') {
+            const msg = document.getElementById('message-' + data.message_id);
+            if (msg) msg.remove();
+        }
+    };
+    
+    chatSocket.onerror = function(e) {
+        console.error('WebSocket ошибка:', e);
+    };
+    
+    chatSocket.onclose = function() {
+        console.log('WebSocket отключен');
+        setTimeout(() => {
+            if (channelId) {
+                chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + channelId + '/');
+            }
+        }, 3000);
+    };
+}
+
+// Отправка сообщения
+function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const message = input.value.trim();
+    
+    if (message && chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+        chatSocket.send(JSON.stringify({
+            type: 'message',
+            message: message,
+            channel_id: channelId
+        }));
+        input.value = '';
+        input.style.height = 'auto';
+    }
+}
+
+document.getElementById('sendMessageBtn').addEventListener('click', sendMessage);
+
+document.getElementById('messageInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+// Авто-ресайз textarea
+document.getElementById('messageInput').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+});
+
+// Добавление сообщения в чат
+function addMessage(data) {
+    const container = document.getElementById('messagesContainer');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'message-group';
+    msgDiv.id = 'message-' + data.message_id;
+    
+    const now = new Date();
+    const time = now.toLocaleString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    msgDiv.innerHTML = `
+        <img src="${data.avatar || '/media/avatars/default.png'}" 
+             alt="${data.username}" class="message-avatar">
+        <div class="message-body">
+            <div class="message-header">
+                <span class="message-author">${data.username}</span>
+                <span class="message-time">${time}</span>
+            </div>
+            <div class="message-text">${escapeHtml(data.message)}</div>
+        </div>
+    `;
+    
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+}
+
+// Экранирование HTML
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Создание канала
+document.getElementById('createChannelForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch('/servers/' + serverId + '/create_channel/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+});
+
+// Переключение категорий
+function toggleCategory(header) {
+    const channels = header.nextElementSibling;
+    const icon = header.querySelector('i');
+    
+    if (channels.style.display === 'none') {
+        channels.style.display = 'block';
+        icon.classList.remove('fa-chevron-right');
+        icon.classList.add('fa-chevron-down');
+    } else {
+        channels.style.display = 'none';
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-right');
+    }
+}
+
+// Установка категории при создании канала
+function setCategory(categoryId) {
+    document.getElementById('categorySelect').value = categoryId;
+}
+
+// Копирование кода приглашения
+function copyInvite(code) {
+    navigator.clipboard.writeText(code).then(() => {
+        alert('Код приглашения скопирован: ' + code);
+    });
+}
+</script>
+
+<style>
+.category-channels {
+    display: block;
+}
+
+.form-select {
+    background-color: var(--bg-tertiary) !important;
+    border-color: var(--border) !important;
+    color: var(--text-primary) !important;
+}
+
+.dropdown-menu-dark .dropdown-item {
+    color: var(--text-primary);
+}
+
+.dropdown-menu-dark .dropdown-item:hover {
+    background-color: var(--brand);
+}
+</style>
+{% endblock %}

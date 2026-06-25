@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Настройки профиля | Discord Clone{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+    <!-- Левый сайдбар серверов -->
+    <div class="servers-bar">
+        <div class="server-item" onclick="location.href='{% url 'direct_messages' %}'" title="Главная">
+            <i class="fab fa-discord"></i>
+        </div>
+        <div class="server-divider"></div>
+        
+        {% for s in request.user.servers.all %}
+        <div class="server-item" onclick="location.href='{% url 'server_view' s.id %}'" title="{{ s.name }}">
+            {% if s.icon %}
+            <img src="{{ s.icon.url }}" alt="{{ s.name }}">
+            {% else %}
+            {{ s.name|slice:":1"|upper }}
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Основная область -->
+    <div class="main-area">
+        <!-- Заголовок -->
+        <div class="main-header">
+            <div class="header-info">
+                <i class="fas fa-user-cog"></i>
+                <h4>Настройки профиля</h4>
+            </div>
+            <div class="header-actions">
+                <button onclick="location.href='{% url 'profile' request.user.id %}'" title="Вернуться к профилю">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Контент -->
+        <div class="messages-area">
+            <div class="p-4">
+                <div class="row">
+                    <!-- Левая колонка - форма -->
+                    <div class="col-md-8">
+                        <div class="card" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius);">
+                            <div class="card-body p-4">
+                                <h5 class="mb-4" style="color: var(--text-primary);">Основная информация</h5>
+                                
+                                <form method="post" enctype="multipart/form-data" id="profileForm">
+                                    {% csrf_token %}
+                                    
+                                    <!-- Имя пользователя -->
+                                    <div class="mb-3">
+                                        <label class="form-label" style="color: var(--text-secondary); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            Имя пользователя
+                                        </label>
+                                        <input type="text" 
+                                               name="username" 
+                                               value="{{ form.username.value|default:request.user.username }}"
+                                               class="form-control" 
+                                               style="background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); padding: 10px 12px; border-radius: 4px; width: 100%;"
+                                               required>
+                                        {% if form.username.errors %}
+                                        <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Email -->
+                                    <div class="mb-3">
+                                        <label class="form-label" style="color: var(--text-secondary); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            Email
+                                        </label>
+                                        <input type="email" 
+                                               name="email" 
+                                               value="{{ form.email.value|default:request.user.email }}"
+                                               class="form-control" 
+                                               style="background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); padding: 10px 12px; border-radius: 4px; width: 100%;"
+                                               required>
+                                        {% if form.email.errors %}
+                                        <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- О себе -->
+                                    <div class="mb-3">
+                                        <label class="form-label" style="color: var(--text-secondary); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            О себе
+                                        </label>
+                                        <textarea name="bio" 
+                                                  class="form-control" 
+                                                  rows="4" 
+                                                  placeholder="Расскажите о себе..."
+                                                  style="background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); padding: 10px 12px; border-radius: 4px; width: 100%; resize: vertical;"
+                                        >{{ form.bio.value|default:request.user.bio|default:'' }}</textarea>
+                                        {% if form.bio.errors %}
+                                        <div class="text-danger small mt-1">{{ form.bio.errors.0 }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Статус -->
+                                    <div class="mb-3">
+                                        <label class="form-label" style="color: var(--text-secondary); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            Пользовательский статус
+                                        </label>
+                                        <div class="input-group" style="background: var(--bg-tertiary); border: 1px solid var(--border); border-radius: 4px;">
+                                            <span class="input-group-text" style="background: none; border: none; color: var(--text-muted);">
+                                                <i class="fas fa-comment"></i>
+                                            </span>
+                                            <input type="text" 
+                                                   name="custom_status" 
+                                                   value="{{ form.custom_status.value|default:request.user.custom_status|default:'' }}"
+                                                   class="form-control" 
+                                                   placeholder="Установите статус"
+                                                   style="background: none; border: none; color: var(--text-primary); padding: 10px 12px;">
+                                        </div>
+                                    </div>
+
+                                    <!-- Кнопки -->
+                                    <div class="d-flex gap-2 mt-4">
+                                        <button type="submit" class="btn btn-primary" style="width: auto;">
+                                            <i class="fas fa-save"></i> Сохранить изменения
+                                        </button>
+                                        <button type="button" class="btn btn-secondary" style="width: auto;" onclick="location.href='{% url 'profile' request.user.id %}'">
+                                            Отмена
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Смена пароля -->
+                        <div class="card mt-4" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius);">
+                            <div class="card-body p-4">
+                                <h5 class="mb-4" style="color: var(--text-primary);">Сменить пароль</h5>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label" style="color: var(--text-secondary); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        Текущий пароль
+                                    </label>
+                                    <input type="password" class="form-control" placeholder="Введите текущий пароль"
+                                           style="background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); padding: 10px 12px; border-radius: 4px; width: 100%;">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label" style="color: var(--text-secondary); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        Новый пароль
+                                    </label>
+                                    <input type="password" class="form-control" placeholder="Введите новый пароль"
+                                           style="background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); padding: 10px 12px; border-radius: 4px; width: 100%;">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label" style="color: var(--text-secondary); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        Подтвердите новый пароль
+                                    </label>
+                                    <input type="password" class="form-control" placeholder="Повторите новый пароль"
+                                           style="background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary); padding: 10px 12px; border-radius: 4px; width: 100%;">
+                                </div>
+
+                                <button class="btn btn-secondary" style="width: auto;">
+                                    <i class="fas fa-key"></i> Сменить пароль
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Правая колонка - аватар -->
+                    <div class="col-md-4">
+                        <div class="card" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius);">
+                            <div class="card-body p-4 text-center">
+                                <h5 class="mb-4" style="color: var(--text-primary);">Аватар</h5>
+                                
+                                <!-- Предпросмотр аватара -->
+                                <div class="position-relative d-inline-block mb-3">
+                                    <img src="{{ request.user.avatar.url }}" 
+                                         alt="Ваш аватар" 
+                                         id="avatarPreview"
+                                         style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid var(--bg-primary);">
+                                    
+                                    <label for="avatarUpload" 
+                                           class="position-absolute bottom-0 end-0"
+                                           style="background: var(--brand); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; border: 3px solid var(--bg-secondary);">
+                                        <i class="fas fa-camera" style="color: white; font-size: 14px;"></i>
+                                    </label>
+                                </div>
+
+                                <div class="mb-3">
+                                    <input type="file" 
+                                           name="avatar" 
+                                           id="avatarUpload" 
+                                           accept="image/*"
+                                           style="display: none;"
+                                           onchange="previewAvatar(this)">
+                                    
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('avatarUpload').click()">
+                                        <i class="fas fa-upload"></i> Загрузить аватар
+                                    </button>
+                                </div>
+
+                                <p class="text-muted small mb-0">
+                                    Рекомендуемый размер: 300x300 пикселей<br>
+                                    Максимальный размер: 2 МБ
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Статус -->
+                        <div class="card mt-4" style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius);">
+                            <div class="card-body p-4">
+                                <h5 class="mb-4" style="color: var(--text-primary);">Статус</h5>
+                                
+                                <div class="d-flex flex-column gap-2">
+                                    <label class="d-flex align-items-center gap-2 p-2 rounded" style="cursor: pointer; transition: all 0.2s;">
+                                        <input type="radio" name="status" value="online" checked>
+                                        <span style="width: 12px; height: 12px; border-radius: 50%; background: var(--green);"></span>
+                                        <span style="color: var(--text-primary);">В сети</span>
+                                    </label>
+                                    
+                                    <label class="d-flex align-items-center gap-2 p-2 rounded" style="cursor: pointer; transition: all 0.2s;">
+                                        <input type="radio" name="status" value="idle">
+                                        <span style="width: 12px; height: 12px; border-radius: 50%; background: var(--yellow);"></span>
+                                        <span style="color: var(--text-primary);">Не активен</span>
+                                    </label>
+                                    
+                                    <label class="d-flex align-items-center gap-2 p-2 rounded" style="cursor: pointer; transition: all 0.2s;">
+                                        <input type="radio" name="status" value="dnd">
+                                        <span style="width: 12px; height: 12px; border-radius: 50%; background: var(--red);"></span>
+                                        <span style="color: var(--text-primary);">Не беспокоить</span>
+                                    </label>
+                                    
+                                    <label class="d-flex align-items-center gap-2 p-2 rounded" style="cursor: pointer; transition: all 0.2s;">
+                                        <input type="radio" name="status" value="offline">
+                                        <span style="width: 12px; height: 12px; border-radius: 50%; background: var(--text-muted);"></span>
+                                        <span style="color: var(--text-primary);">Невидимый</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Предпросмотр аватара
+function previewAvatar(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('avatarPreview').src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Подсветка выбранного статуса
+document.querySelectorAll('input[name="status"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.querySelectorAll('input[name="status"]').forEach(r => {
+            r.closest('label').style.background = 'none';
+        });
+        if (this.checked) {
+            this.closest('label').style.background = 'var(--bg-hover)';
+        }
+    });
+});
+
+// Инициализация - подсветка текущего статуса
+const currentStatus = '{{ request.user.status }}';
+if (currentStatus) {
+    const radio = document.querySelector(`input[name="status"][value="${currentStatus}"]`);
+    if (radio) {
+        radio.checked = true;
+        radio.closest('label').style.background = 'var(--bg-hover)';
+    }
+}
+</script>
+
+<style>
+/* Стили для input[type="file"] */
+input[type="file"] {
+    display: none;
+}
+
+/* Стили для radio кнопок статуса */
+input[type="radio"] {
+    accent-color: var(--brand);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* Hover эффект для статусов */
+.d-flex.flex-column.gap-2 label:hover {
+    background: var(--bg-hover) !important;
+    border-radius: 4px;
+}
+
+/* Кастомный скроллбар для textarea */
+textarea.form-control:focus {
+    outline: none;
+    border-color: var(--brand) !important;
+    box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.2);
+}
+
+/* Анимация для кнопки загрузки аватара */
+#avatarUpload + label {
+    transition: all 0.2s;
+}
+
+#avatarUpload + label:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+}
+
+/* Стили для карточек */
+.card {
+    transition: all 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+</style>
+{% endblock %}
